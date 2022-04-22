@@ -29,8 +29,6 @@ func Read(conn net.Conn) {
 		jsonSize, err := conn.Read(recvBuffer)
 
 		if jsonSize > 0 && err == nil {
-			//packet := Packet{}
-
 			data := string(recvBuffer[:jsonSize])
 			fmt.Println(data)
 			conn.Write(recvBuffer[:jsonSize])
@@ -64,14 +62,10 @@ func SendPacket(c *net.Conn) {
 	}()
 }
 
-func main() {
-	fmt.Println("INIT_Main")
-
-	//	addAddr, err := net.ResolveTCPAddr("tcp", ":8000")
-
-	Addr, err := net.Listen("tcp", ":8000")
+func Connect() {
+	Addr, err := net.Listen("tcp", ":1998")
 	if err != nil {
-		fmt.Println("Connection Faile : ", err)
+		fmt.Println("Connection Fail : ", err)
 	}
 
 	defer Addr.Close()
@@ -79,12 +73,17 @@ func main() {
 	for {
 		conn, err := Addr.Accept()
 		if err != nil {
-			fmt.Println("Accept Faile : ", err)
+			fmt.Println("Connect Fail : ", err)
 		} else {
 			fmt.Println("Connect Success : ", conn)
 		}
 
 		go Read(conn)
 	}
+}
 
+func main() {
+	fmt.Println("Server Start")
+
+	Connect()
 }
