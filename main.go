@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/binary"
 	"encoding/json"
 	"fmt"
 	"net"
@@ -31,8 +30,8 @@ func Read(conn net.Conn) {
 		if jsonSize > 0 && err == nil {
 			data := string(recvBuffer[:jsonSize])
 			fmt.Println(data)
-			conn.Write(recvBuffer[:jsonSize])
-			//SendPacket(&conn)
+			//conn.Write(recvBuffer[:jsonSize])
+			SendPacket(&conn)
 		}
 	}
 }
@@ -47,12 +46,15 @@ func SendPacket(c *net.Conn) {
 	go func() {
 		if c != nil {
 			Data := []byte(str)
-			Length := uint32(len(Data))
-			sizeBytes := make([]byte, 4)
-			PacketType := int32(1)
-			PacketHadder := []byte{byte(PacketType), 0, byte(Length), 0}
+			Length := uint8(len(Data) + 4)
+			//sizeBytes := make([]byte, 4)
+			var sizeBytes []byte
+			//sizeBytes := []byte(uint8)
 
-			binary.LittleEndian.PutUint32(sizeBytes, Length)
+			PacketType := uint8(3)
+			PacketHadder := []byte{byte(Length), 0, byte(PacketType), 0}
+
+			//binary.LittleEndian.PutUint32(sizeBytes, Length)
 
 			sizeBytes = append(sizeBytes, PacketHadder...)
 			sizeBytes = append(sizeBytes, Data...)
