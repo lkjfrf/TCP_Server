@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"main/content"
 	"net"
 
 	"github.com/mitchellh/mapstructure"
@@ -86,6 +87,6 @@ func Connect() {
 
 func main() {
 	fmt.Println("Server Start")
-
+	content.ContentManagerInst()
 	Connect()
 }
