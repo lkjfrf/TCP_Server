@@ -15,7 +15,6 @@ type Packet struct {
 }
 
 type CTManager struct {
-	Callbacks map[string]func(interface{})
 }
 
 var instance_CT *CTManager
@@ -33,48 +32,59 @@ func (ct *CTManager) Init() {
 
 }
 
-func (ct *CTManager) CallBack(PacketType int, v interface{}) {
+func (ct *CTManager) CallBack(PacketType int, c *net.Conn, v interface{}) {
 	switch PacketType {
 	case 1:
 		type SignIn struct {
-			Conn *net.TCPConn
-			Id   string
-			Data int32
+			Id         string
+			IntData    int32
+			StringData string
 		}
 		data := &SignIn{}
-		helper.FillStruct_Interface(v, data)
-		data.Data = 123123
+		helper.FillStruct_Interface(v, &data)
+		data.IntData = 1111
+		data.StringData = "packet1"
 
-		str, err := json.Marshal(data)
-		if err != nil {
-			fmt.Println("Marshal faile")
-		}
-
-		ct.SendPacket(data.Conn, str, PacketType)
+		ct.SendPacket(c, PacketType, data)
 
 	case 2:
 		type SignIn struct {
-			Conn  *net.TCPConn
-			Id    string
-			Data2 int32
+			Id         string
+			IntData    int32
+			StringData string
 		}
 		data := &SignIn{}
-		helper.FillStruct_Interface(v, data)
-		data.Data2 = 321321
+		helper.FillStruct_Interface(v, &data)
+		data.IntData = 2222
+		data.StringData = "packet2"
 
-		str, err := json.Marshal(data)
-		if err != nil {
-			fmt.Println("Marshal faile")
+		ct.SendPacket(c, PacketType, data)
+
+	default:
+		type SignIn struct {
+			Id         string
+			IntData    int32
+			StringData string
 		}
+		data := &SignIn{}
+		helper.FillStruct_Interface(v, &data)
+		data.IntData = 321321
+		data.StringData = "songsongE"
 
-		ct.SendPacket(data.Conn, str, PacketType)
+		ct.SendPacket(c, PacketType, data)
 	}
 
 }
 
-func (ct *CTManager) SendPacket(c *net.TCPConn, str []byte, PacketType int) {
+func (ct *CTManager) SendPacket(c *net.Conn, PacketType int, v interface{}) {
 	go func() {
 		if c != nil {
+
+			str, err := json.Marshal(v)
+			if err != nil {
+				fmt.Println("Marshal faile")
+			}
+
 			Data := []byte(str)
 			Length := uint8(len(Data) + 4)
 			var sizeBytes []byte
