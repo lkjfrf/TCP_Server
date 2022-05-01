@@ -48,15 +48,10 @@ func (ct *CTManager) CallBack(PacketType int, c *net.Conn, v interface{}) {
 		ct.SendPacket(c, PacketType, data)
 
 	case 2:
-		type SignIn struct {
-			Id         string
-			IntData    int32
-			StringData string
-		}
-		data := &SignIn{}
+		data := &Packet{}
 		helper.FillStruct_Interface(v, &data)
-		data.IntData = 2222
-		data.StringData = "packet2"
+		data.Data = "songsongsong"
+		data.Data2 = 123123
 
 		ct.SendPacket(c, PacketType, data)
 
@@ -73,7 +68,6 @@ func (ct *CTManager) CallBack(PacketType int, c *net.Conn, v interface{}) {
 
 		ct.SendPacket(c, PacketType, data)
 	}
-
 }
 
 func (ct *CTManager) SendPacket(c *net.Conn, PacketType int, v interface{}) {
